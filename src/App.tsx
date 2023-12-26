@@ -70,6 +70,13 @@ function App() {
 
   }
 
+  // 削除ボタン
+  const onClickDelete = (index:any) => {
+    const newTodos = [...todos];
+    newTodos.splice(index, 1);
+    setTodos(newTodos);
+  }
+
 
 
   return (
@@ -99,11 +106,11 @@ function App() {
 
             </div>
             </li> */}
-            {todos.map((todo) => (
+            {todos.map((todo,index) => (
               <li key={todo.id} className='inProgress' ><span className='tobeDone'>{todo.targetDate}</span><input onChange={(event) =>handleEdit(todo.id,event.target.value)}type="text" value={todo.inputText} className='inputText'/>
                           <div className='buttonWrap'>
-            <button className='completeButton'>完了</button>
-            <button className='deleteButton'>削除</button>
+            <button onClick={()=> {}}className='completeButton'>完了</button>
+            <button onClick={()=>onClickDelete(index)} className='deleteButton'>削除</button>
 
             </div>
               </li>
