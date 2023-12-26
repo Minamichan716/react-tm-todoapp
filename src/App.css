@@ -72,6 +72,12 @@ form{
   /* border: none; */
 }
 
+.inputDate{
+  height: 31px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
 /* ================
 ボタン */
 .submitButton{
@@ -94,6 +100,10 @@ form{
   padding: 10px;
   border: 1px solid #e6e5e5;
   border-radius: 5px;
+}
+
+.tobeDone{
+  font-size: 13px;
 }
 
 .doneList{
