@@ -19,6 +19,10 @@ button{
   
 }
 
+button:hover{
+  cursor: pointer;
+}
+
 li{
   color: black;
   font-size: 18px;
@@ -68,8 +72,14 @@ form{
 .inputText{
   /* width: 100px; */
   height: 31px;
+/* border: none; */
   margin-bottom: 10px;
   /* border: none; */
+}
+
+.inputedText{
+  height: 31px;
+  border: none;
 }
 
 .inputDate{
