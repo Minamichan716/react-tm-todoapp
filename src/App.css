@@ -126,7 +126,11 @@ form{
 
 .done{
 padding: 10px;
-  text-decoration: line-through;
+  /* text-decoration: line-through; */
+}
+
+.doneInputText{
+  border: none;
 }
 
 .deleteButton{
