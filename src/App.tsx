@@ -12,9 +12,7 @@ function App() {
   // 空の配列に何が入るかを指定する(Todoで宣言した3つの配列を持つ型)
   const [todos , setTodos] = useState<Todo[]>([]);
   // 完了ボタン 
-  const [completetodos, setCompletetodos] = useState<Todo[]>([
-    
-  ]);
+  const [completetodos, setCompletetodos] = useState<Todo[]>([]);
  
  
   // 型を指定しておく
@@ -26,6 +24,7 @@ function App() {
     targetDate:string;
 
   }
+
 
   // 入力したTodo
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,7 +56,7 @@ function App() {
   }
 
    //unique IDの変数
-   const uniqueId = uuidv4();
+  //  const uniqueId = uuidv4();
 
   // 編集するidと入力値を取得する。引数名はなんでもいいのか
   const handleEdit = (id:string, inputText:string) => {
@@ -90,15 +89,25 @@ function App() {
 
 
   // 完了ボタン
-  const onClickComplete = (index:any) => {
-  
-    const newIncompleteTodos = [...todos];
-    newIncompleteTodos.splice(index, 1);
+  const onClickComplete = (id:string) => {
+    // 残されたリスト
+    const newIncompleteTodos= todos.filter((todo) => todo.id !== id );
+    // 選択したtodo
+    const targetIncompleteTodos = todos.filter((todo) => todo.id === id );
+    const newCompleteTodos= [...completetodos,targetIncompleteTodos]
 
+ 
 
-    const newCompleteTodos = [...completetodos,todos[index]];
     setTodos(newIncompleteTodos);
-    setCompletetodos(newCompleteTodos);
+    setCompletetodos(newCompleteTodos)
+        
+    
+  }
+
+
+  // 戻すボタン
+  const onClicBack = (id:string) => {
+
   }
 
 
@@ -115,14 +124,14 @@ function App() {
         <div className='inProgressList'>
           <h2>完了予定/内容</h2>
           <ul>
-            {todos.map((todo,index) => (
+            {todos.map((todo) => (
               <li key={todo.id} className='inProgress' >
                 <span className='tobeDone'>{todo.targetDate}</span>
                 <input onChange={(event) =>handleEdit(todo.id,event.target.value)}
                 type="text" value={todo.inputText} 
                 className='inputText'/>
                 <div className='buttonWrap'>
-                  <button onClick={()=> onClickComplete(index)}className='completeButton'>完了</button>
+                  <button onClick={()=> onClickComplete(todo.id)}className='completeButton'>完了</button>
                   <button onClick={()=>onClickDelete(todo.id)} className='deleteButton'>削除</button>
                 </div>
               </li>
@@ -132,8 +141,8 @@ function App() {
         <div className='doneList'>
           <h2>完了リスト</h2>
           <ul>
-            {completetodos.map((todo,index) => (
-              <li key={uniqueId} className='done' >
+            {completetodos.map((todo) => (
+              <li key={todo.id} className='done' >
                 <span className='tobeDone'>{todo.targetDate}</span>
                 <input
                 disabled
@@ -141,7 +150,7 @@ function App() {
                 value={todo.inputText} 
                 className='doneInputText'/>
                 <div className='buttonWrap'>
-                  <button onClick={()=> onClickComplete(index)} className='backButton'>戻す</button>
+                  <button onClick={()=> onClicBack(todo.id)} className='backButton'>戻す</button>
                   <button onClick={()=>completeDelete(todo.id)}  className='deleteButton'>削除</button>
                 </div>
               </li>
