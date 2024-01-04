@@ -94,14 +94,9 @@ function App() {
     const newIncompleteTodos= todos.filter((todo) => todo.id !== id );
     // 選択したtodo
     const targetIncompleteTodos = todos.filter((todo) => todo.id === id );
-    const newCompleteTodos= [...completetodos,targetIncompleteTodos]
-
- 
-
+    const newCompleteTodos= [...completetodos,...targetIncompleteTodos]
     setTodos(newIncompleteTodos);
     setCompletetodos(newCompleteTodos)
-        
-    
   }
 
 
@@ -124,7 +119,7 @@ function App() {
         <div className='inProgressList'>
           <h2>完了予定/内容</h2>
           <ul>
-            {todos.map((todo) => (
+            {todos.map((todo,index) => (
               <li key={todo.id} className='inProgress' >
                 <span className='tobeDone'>{todo.targetDate}</span>
                 <input onChange={(event) =>handleEdit(todo.id,event.target.value)}
@@ -141,8 +136,8 @@ function App() {
         <div className='doneList'>
           <h2>完了リスト</h2>
           <ul>
-            {completetodos.map((todo) => (
-              <li key={todo.id} className='done' >
+            {completetodos.map((todo,index) => (
+              <li key={index} className='done' >
                 <span className='tobeDone'>{todo.targetDate}</span>
                 <input
                 disabled
