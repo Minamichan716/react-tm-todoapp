@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import { v4 as uuidv4 } from 'uuid';
 function App() {
@@ -20,7 +20,6 @@ function App() {
     inputText:string;
     id:string;
     checked:boolean;
-    // 日付の型が分からない
     targetDate:string;
 
   }
@@ -35,6 +34,7 @@ function App() {
   const targetDate = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputDate(event.target.value)
     // console.log(event.target.value);   
+    
   }
 
   // リスト追加の処理
@@ -48,11 +48,9 @@ function App() {
       checked:false,
       targetDate : inputDate,
     };
-    // console.log(newTodos.id)
     setTodos([newTodos, ...todos]);
     setInputText("");
     setInputDate("");
-    // console.log(setTodos([newTodos, ...todos]))
   }
 
    //unique IDの変数
@@ -76,14 +74,16 @@ function App() {
 
   // 未完了削除ボタン
   const onClickDelete = (id:string) => {
-  const remaindTodos = todos.filter((todo) => todo.id !== id );
-  setTodos(remaindTodos);
+  const remainTodos = todos.filter((todo) => todo.id !== id );
+  setTodos(remainTodos);
   }
 
   // 完了削除
   const completeDelete = (id:string) => {
-  const newCompleteTodos = todos.filter((todo) => todo.id !== id );
-  setCompletetodos(newCompleteTodos);
+  const newRemainCompleteTodos = todos.filter((todo) => todo.id !== id );
+  // console.log(newRemainCompleteTodos)
+  setCompletetodos(newRemainCompleteTodos);
+
   }
 
 
@@ -102,10 +102,22 @@ function App() {
 
   // 戻すボタン
   const onClicBack = (id:string) => {
+        // 残されたリスト
+        const newCompleteTodos= todos.filter((todo) => todo.id !== id );
+        // 選択したtodo
+        const targetCompleteTodos = todos.filter((todo) => todo.id === id );
+        const newIncompleteTodos= [...targetCompleteTodos,...todos]
+        setTodos(newIncompleteTodos);
+        setCompletetodos(newCompleteTodos)
 
   }
 
+  // 日付の取得
+ 
 
+  // const today =  new Date();
+
+  
 
   return (
     <div className="App">
@@ -119,7 +131,7 @@ function App() {
         <div className='inProgressList'>
           <h2>完了予定/内容</h2>
           <ul>
-            {todos.map((todo,index) => (
+            {todos.map((todo) => (
               <li key={todo.id} className='inProgress' >
                 <span className='tobeDone'>{todo.targetDate}</span>
                 <input onChange={(event) =>handleEdit(todo.id,event.target.value)}
@@ -136,8 +148,8 @@ function App() {
         <div className='doneList'>
           <h2>完了リスト</h2>
           <ul>
-            {completetodos.map((todo,index) => (
-              <li key={index} className='done' >
+            {completetodos.map((todo) => (
+              <li key={todo.id} className='done' >
                 <span className='tobeDone'>{todo.targetDate}</span>
                 <input
                 disabled
