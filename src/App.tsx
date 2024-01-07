@@ -53,8 +53,6 @@ function App() {
     setInputDate("");
   }
 
-   //unique IDの変数
-  //  const uniqueId = uuidv4();
 
   // 編集するidと入力値を取得する。引数名はなんでもいいのか
   const handleEdit = (id:string, inputText:string) => {
@@ -80,7 +78,7 @@ function App() {
 
   // 完了削除
   const completeDelete = (id:string) => {
-  const newRemainCompleteTodos = todos.filter((todo) => todo.id !== id );
+  const newRemainCompleteTodos = completetodos.filter((todo) => todo.id !== id );
   // console.log(newRemainCompleteTodos)
   setCompletetodos(newRemainCompleteTodos);
 
@@ -103,19 +101,15 @@ function App() {
   // 戻すボタン
   const onClicBack = (id:string) => {
         // 残されたリスト
-        const newCompleteTodos= todos.filter((todo) => todo.id !== id );
+        const newCompleteTodos= completetodos.filter((todo) => todo.id !== id );
         // 選択したtodo
-        const targetCompleteTodos = todos.filter((todo) => todo.id === id );
+        const targetCompleteTodos = completetodos.filter((todo) => todo.id === id );
         const newIncompleteTodos= [...targetCompleteTodos,...todos]
         setTodos(newIncompleteTodos);
         setCompletetodos(newCompleteTodos)
 
   }
 
-  // 日付の取得
- 
-
-  // const today =  new Date();
 
   
 
