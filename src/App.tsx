@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import { v4 as uuidv4 } from 'uuid';
 import { InputTodos } from './components/InputTodos';
 import { InProgressList } from './components/InProgressList';
 import { DoneList } from './components/DoneList';
+
+// firebase を読み込む
+import db from './firebase';
+import { collection, getDocs } from "firebase/firestore"; 
+
 function App() {
 
   // 入力したtodoの取得
@@ -13,6 +18,20 @@ function App() {
 
   // 空の配列に何が入るかを指定する(Todoで宣言した3つの配列を持つ型)
   const [todos , setTodos] = useState<Todo[]>([]);
+
+  // firebase　リロードしてからデータを取得する
+  // データベースと連携してデータを取ってくる
+  useEffect(() => {
+    // データベースからデータを読み取る
+    const TodoData = collection(db,"todos");
+    getDocs(TodoData).then((snapShot) => {
+      // console.log(snapShot.docs.map((doc) => doc.data()));
+      setTodos(snapShot.docs.map((doc) => ({...doc.data()})))
+    })
+
+  },[])
+
+
   // 完了ボタン 
   const [completetodos, setCompletetodos] = useState<Todo[]>([]);
 
