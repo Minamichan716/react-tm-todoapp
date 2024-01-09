@@ -142,7 +142,7 @@ padding: 10px;
   background-color: #4ed963;
 }
 
-.backButton{
+.backButton,.EditButton{
   border: 1px solid #666;
   color: #666;
   background-color: #fff;
