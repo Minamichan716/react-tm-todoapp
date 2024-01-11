@@ -1,12 +1,16 @@
 
 export const InProgressList = ({todos,handleEdit,onClickComplete,onClickDelete}) => {
-    return(
+    
+  
+  
+  
+  return(
         <div className='inProgressList'>
           <h2>進行中</h2>
           <ul>
             {todos.map((todo) => (
               <li key={todo.id} className='inProgress' >
-                <span className='tobeDone'>{todo.targetDate}</span>
+                <span className='tobeDone'>期限：{todo.targetDate}</span>
                 <input onChange={(event) =>handleEdit(todo.id,event.target.value)}
                 type="text" value={todo.inputText} 
                 className='inputText'/>

@@ -7,35 +7,34 @@ import { DoneList } from './components/DoneList';
 
 // firebase を読み込む
 import db from './firebase';
-import { collection, getDocs } from "firebase/firestore"; 
+import { collection,onSnapshot,doc, addDoc,deleteDoc} from "firebase/firestore"; 
 
 function App() {
-
   // 入力したtodoの取得
   const [inputText, setInputText] = useState("");
+
   // 入力した日付の取得
   const [inputDate, setInputDate] = useState("");
 
   // 空の配列に何が入るかを指定する(Todoで宣言した3つの配列を持つ型)
   const [todos , setTodos] = useState<Todo[]>([]);
-
   // firebase　リロードしてからデータを取得する
   // データベースと連携してデータを取ってくる
   useEffect(() => {
-    // データベースからデータを読み取る
-    const TodoData = collection(db,"todos");
-    getDocs(TodoData).then((snapShot) => {
-      // console.log(snapShot.docs.map((doc) => doc.data()));
-      setTodos(snapShot.docs.map((doc) => ({...doc.data()})))
-    })
-
+    const Tododata = collection(db,'todos');
+    // getDocs(Tododata).then((snapShot) => {
+    //   console.log(snapShot.docs.map((doc) => ({...doc.data()})));
+    //   setTodos(snapShot.docs.map((doc) => ({...doc.data()as Todo})))
+    // })
+    // リアルタイムで取得
+    onSnapshot(Tododata, (todo) => {
+      setTodos(todo.docs.map((doc) => ({...doc.data()as Todo})));
+    });
   },[])
 
 
   // 完了ボタン 
   const [completetodos, setCompletetodos] = useState<Todo[]>([]);
-
-
 
   // 型を指定しておく
   type Todo = {
@@ -50,15 +49,34 @@ function App() {
     setInputText(event.target.value)
   }
 
-  // 完了予定日の取得
+  // 完了予定日の取得 日付のエラーを表示させたい(当日以降の日付を入力してください)
   const targetDate = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputDate(event.target.value)
-    // console.log(event.target.value);   
+    // console.log(event.target.value); 
+    
+    //本日の日付の取得
+    const today = new Date();
+
+    // 入力した日付の取得
+    const targetDate = event.target.value;
+    // alert(addDate)
+    console.log(  today.valueOf());
+    // console.log(Number(targetDate).getTime());
+    console.log(typeof targetDate+'??' );
+    console.log(targetDate.valueOf());
   }
+
 
   // リスト追加の処理
   const onSubmitTodoAdd = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+// firebaseのデータベースにデータを追加する
+addDoc(collection(db,"todos"),{
+  id:uuidv4(),
+  inputText:inputText,
+  targetDate:inputDate,
+})
 
     // 新しいTodo作成
     const newTodos :Todo= {
@@ -72,7 +90,6 @@ function App() {
     setInputDate("");
   }
 
-  
   // 編集するidと入力値を取得する。引数名はなんでもいいのか
   const handleEdit = (id:string,inputText:string) => {
 
@@ -86,12 +103,24 @@ function App() {
     })
     // 左辺と右辺の型がマッチしてない　todos
     setTodos(newTodos);
-
   }
 
+
   // 未完了削除ボタン
-  const onClickDelete = (id:string) => {
+  const onClickDelete = async(id:string) => {
+
   const remainTodos = todos.filter((todo) => todo.id !== id );
+    // firebaseのデータベースデータを削除する
+    await deleteDoc(doc(db,"todos",id))
+
+// firebaseのデータベースにデータを追加する
+// addDoc(collection(db,"todos"),{
+//   id:uuidv4(),
+//   inputText:inputText,
+//   targetDate:inputDate,
+
+// })
+
   setTodos(remainTodos);
   }
 
@@ -124,13 +153,29 @@ function App() {
         setCompletetodos(newCompleteTodos)
   }
 
+  
   return (
     <div className="App">
       <h1>Todo List</h1>
-      <InputTodos inputText={inputText}inputDate={inputDate} onSubmitTodoAdd={onSubmitTodoAdd} handleChange={handleChange} targetDate={targetDate} />
+      <InputTodos 
+        inputText={inputText}
+        inputDate={inputDate} 
+        onSubmitTodoAdd={onSubmitTodoAdd}
+        handleChange={handleChange} 
+        targetDate={targetDate} 
+      />
       <div className='container'>
-      <InProgressList todos={todos} handleEdit={handleEdit} onClickComplete={onClickComplete} onClickDelete={onClickDelete} />
-      <DoneList completetodos={completetodos} onClicBack={onClicBack} completeDelete={completeDelete}/>
+        <InProgressList 
+          todos={todos} 
+          handleEdit={handleEdit} 
+          onClickComplete={onClickComplete} 
+          onClickDelete={onClickDelete} 
+        />
+        <DoneList 
+          completetodos={completetodos} 
+          onClicBack={onClicBack} 
+          completeDelete={completeDelete}
+        />
       </div>
     </div>
   );
