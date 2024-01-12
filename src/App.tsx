@@ -7,7 +7,7 @@ import { DoneList } from './components/DoneList';
 
 // firebase を読み込む
 import db from './firebase';
-import { collection,onSnapshot,doc, addDoc,deleteDoc} from "firebase/firestore"; 
+import { collection,onSnapshot,doc, addDoc,deleteDoc, setDoc} from "firebase/firestore"; 
 
 function App() {
   // 入力したtodoの取得
@@ -31,7 +31,6 @@ function App() {
       setTodos(todo.docs.map((doc) => ({...doc.data()as Todo})));
     });
   },[])
-
 
   // 完了ボタン 
   const [completetodos, setCompletetodos] = useState<Todo[]>([]);
@@ -70,10 +69,15 @@ function App() {
   // リスト追加の処理
   const onSubmitTodoAdd = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-
+    const id = uuidv4();
 // firebaseのデータベースにデータを追加する
-addDoc(collection(db,"todos"),{
-  id:uuidv4(),
+// addDoc(collection(db,"todos"),{
+//   id:uuidv4(),
+//   inputText:inputText,
+//   targetDate:inputDate,
+// })
+setDoc(doc(db,"todos",id),{
+  id,
   inputText:inputText,
   targetDate:inputDate,
 })
@@ -81,7 +85,7 @@ addDoc(collection(db,"todos"),{
     // 新しいTodo作成
     const newTodos :Todo= {
       inputText : inputText,
-      id:uuidv4(),
+      id,
       // checked:false,
       targetDate : inputDate,
     };
@@ -105,21 +109,12 @@ addDoc(collection(db,"todos"),{
     setTodos(newTodos);
   }
 
-
   // 未完了削除ボタン
   const onClickDelete = async(id:string) => {
 
   const remainTodos = todos.filter((todo) => todo.id !== id );
     // firebaseのデータベースデータを削除する
     await deleteDoc(doc(db,"todos",id))
-
-// firebaseのデータベースにデータを追加する
-// addDoc(collection(db,"todos"),{
-//   id:uuidv4(),
-//   inputText:inputText,
-//   targetDate:inputDate,
-
-// })
 
   setTodos(remainTodos);
   }
@@ -153,7 +148,6 @@ addDoc(collection(db,"todos"),{
         setCompletetodos(newCompleteTodos)
   }
 
-  
   return (
     <div className="App">
       <h1>Todo List</h1>
