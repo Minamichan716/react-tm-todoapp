@@ -30,6 +30,7 @@ function App() {
     onSnapshot(Tododata, (todo) => {
       setTodos(todo.docs.map((doc) => ({...doc.data()as Todo})));
     });
+
   },[])
 
   // 完了ボタン 
@@ -70,72 +71,87 @@ function App() {
   const onSubmitTodoAdd = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const id = uuidv4();
-// firebaseのデータベースにデータを追加する
-// addDoc(collection(db,"todos"),{
-//   id:uuidv4(),
-//   inputText:inputText,
-//   targetDate:inputDate,
-// })
-setDoc(doc(db,"todos",id),{
-  id,
-  inputText:inputText,
-  targetDate:inputDate,
-})
 
-    // 新しいTodo作成
-    const newTodos :Todo= {
-      inputText : inputText,
-      id,
-      // checked:false,
-      targetDate : inputDate,
-    };
-    setTodos([newTodos, ...todos]);
-    setInputText("");
-    setInputDate("");
+  setDoc(doc(db,"todos",id),{
+    id,
+    inputText:inputText,
+    targetDate:inputDate,
+  })
+
+  // 新しいTodo作成
+  const newTodos :Todo= {
+    inputText : inputText,
+    id,
+    // checked:false,
+    targetDate : inputDate,
+  };
+
+  setTodos([newTodos, ...todos]);
+  setInputText("");
+  setInputDate("");
   }
 
   // 編集するidと入力値を取得する。引数名はなんでもいいのか
   const handleEdit = (id:string,inputText:string) => {
 
-    const newTodos = todos.map((todo) => {
-      // todoのidがIDに等しい場合編集できる
-      if (todo.id === id) {
-        todo.inputText = inputText; //編集している文字列のこと
-      }
-      // リターンで返す意味
-      return todo;
-    })
-    // 左辺と右辺の型がマッチしてない　todos
-    setTodos(newTodos);
+  const newTodos = todos.map((todo) => {
+    // todoのidがIDに等しい場合編集できる
+    if (todo.id === id) {
+      todo.inputText = inputText; //編集している文字列のこと
+    }
+    // リターンで返す意味
+    return todo;
+  })
+  // 左辺と右辺の型がマッチしてない　todos
+  setTodos(newTodos);
   }
 
-  // 未完了削除ボタン
-  const onClickDelete = async(id:string) => {
+  
+/* =============================================
+未完了リスト */
 
+  // 未完了リスト削除ボタン
+  const onClickDelete = async(id:string) => {
   const remainTodos = todos.filter((todo) => todo.id !== id );
     // firebaseのデータベースデータを削除する
-    await deleteDoc(doc(db,"todos",id))
-
+  await deleteDoc(doc(db,"todos",id))
   setTodos(remainTodos);
+
   }
 
-  // 完了削除
+    // 未完了リストの完了ボタン(完了リストに移動させる)
+    const onClickComplete = async(id:string) => {
+
+      // 残されたリスト
+      const newIncompleteTodos= todos.filter((todo) => todo.id !== id );
+      // 選択したtodo
+      const targetIncompleteTodos = todos.filter((todo) => todo.id === id );
+      const newCompleteTodos= [...completetodos,...targetIncompleteTodos]
+  
+      await deleteDoc(doc(db,"todos",id))
+      // firebaseのデータベースにデータを追加する
+      await setDoc(doc(db, "completetodos",id), {
+        id:uuidv4(),
+        inputText:inputText,
+        targetDate:inputDate,
+      });
+  
+          setTodos(newIncompleteTodos);
+          setCompletetodos(newCompleteTodos)
+        }
+
+  /* =============================================
+./未完了リスト */
+
+/* =============================================
+完了リスト */
+
+  // 完了リスト削除ボタン
   const completeDelete = (id:string) => {
-  const newRemainCompleteTodos = completetodos.filter((todo) => todo.id !== id );
-  // console.log(newRemainCompleteTodos)
-  setCompletetodos(newRemainCompleteTodos);
-  }
-
-  // 完了ボタン
-  const onClickComplete = (id:string) => {
-    // 残されたリスト
-    const newIncompleteTodos= todos.filter((todo) => todo.id !== id );
-    // 選択したtodo
-    const targetIncompleteTodos = todos.filter((todo) => todo.id === id );
-    const newCompleteTodos= [...completetodos,...targetIncompleteTodos]
-    setTodos(newIncompleteTodos);
-    setCompletetodos(newCompleteTodos)
-  }
+    const newRemainCompleteTodos = completetodos.filter((todo) => todo.id !== id );
+    // console.log(newRemainCompleteTodos)
+    setCompletetodos(newRemainCompleteTodos);
+    }
 
   // 戻すボタン
   const onClicBack = (id:string) => {
@@ -147,6 +163,8 @@ setDoc(doc(db,"todos",id),{
         setTodos(newIncompleteTodos);
         setCompletetodos(newCompleteTodos)
   }
+/* =============================================
+./完了リスト */
 
   return (
     <div className="App">
