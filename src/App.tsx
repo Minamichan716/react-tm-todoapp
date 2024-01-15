@@ -7,7 +7,8 @@ import { DoneList } from './components/DoneList';
 
 // firebase を読み込む
 import db from './firebase';
-import { collection,onSnapshot,doc, addDoc,deleteDoc, setDoc} from "firebase/firestore"; 
+import { collection,onSnapshot,doc, addDoc,deleteDoc, setDoc,getDoc} from "firebase/firestore"; 
+
 
 function App() {
   // 入力したtodoの取得
@@ -120,7 +121,7 @@ function App() {
   }
 
     // 未完了リストの完了ボタン(完了リストに移動させる)
-    const onClickComplete = async(id:string) => {
+    const onClickComplete = async(todo:Todo,id:string) => {
 
       // 残されたリスト
       const newIncompleteTodos= todos.filter((todo) => todo.id !== id );
@@ -128,17 +129,18 @@ function App() {
       const targetIncompleteTodos = todos.filter((todo) => todo.id === id );
       const newCompleteTodos= [...completetodos,...targetIncompleteTodos]
   
-      await deleteDoc(doc(db,"todos",id))
+      // await deleteDoc(doc(db,"todos",id))
       // firebaseのデータベースにデータを追加する
-      await setDoc(doc(db, "completetodos",id), {
-        id:uuidv4(),
-        inputText:inputText,
-        targetDate:inputDate,
+      await setDoc(doc(db, "completetodos"), {
+        id:todo.id,
+        inputText:todo.inputText,
+        targetDate:todo.targetDate,
       });
   
           setTodos(newIncompleteTodos);
           setCompletetodos(newCompleteTodos)
         }
+
 
   /* =============================================
 ./未完了リスト */
