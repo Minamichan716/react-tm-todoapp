@@ -17,6 +17,9 @@ function App() {
   // 入力した日付の取得
   const [inputDate, setInputDate] = useState("");
 
+  // ボタンテキスト変更
+  const [isActive, setIsActive] = useState(false)
+
   // 空の配列に何が入るかを指定する(Todoで宣言した3つの配列を持つ型)
   const [todos , setTodos] = useState<Todo[]>([]);
   // firebase　リロードしてからデータを取得する
@@ -92,8 +95,7 @@ function App() {
   setInputDate("");
   }
 
-  // 編集するidと入力値を取得する。引数名はなんでもいいのか
-  const handleEdit = (id:string,inputText:string) => {
+
 
   const newTodos = todos.map((todo) => {
     // todoのidがIDに等しい場合編集できる
@@ -105,6 +107,22 @@ function App() {
   })
   // 左辺と右辺の型がマッチしてない　todos
   setTodos(newTodos);
+=======
+  const onClickEdit = (id:string,inputText:string) => {
+        const newTodos = todos.map((todo) => {
+      // todoのidがIDに等しい場合編集できる
+      if (todo.id === id) {
+        todo.inputText = inputText; //編集している文字列のこと
+      }
+      // リターンで返す意味
+      return todo;
+    })
+    // クリックでテキストが変わる
+      setIsActive(!isActive)
+
+    // 左辺と右辺の型がマッチしてない　todos
+    setTodos(newTodos);
+
   }
 
   
@@ -181,9 +199,10 @@ function App() {
       <div className='container'>
         <InProgressList 
           todos={todos} 
-          handleEdit={handleEdit} 
           onClickComplete={onClickComplete} 
           onClickDelete={onClickDelete} 
+          onClickEdit={onClickEdit}
+          buttonText={isActive ? '終了' : '編集'}
         />
         <DoneList 
           completetodos={completetodos} 
