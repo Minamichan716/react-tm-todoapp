@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { InputTodos } from './components/InputTodos';
 import { InProgressList } from './components/InProgressList';
 import { DoneList } from './components/DoneList';
+import Modal from "react-modal";
 
 // firebase を読み込む
 import db from './firebase';
@@ -18,7 +19,10 @@ function App() {
   const [inputDate, setInputDate] = useState("");
 
   // ボタンテキスト変更
-  const [isActive, setIsActive] = useState(false)
+  // const [isActive, setIsActive] = useState(false)
+
+  // モーダル開く
+  const [editModalIsOpen, setEditModalIsOpen] = useState(false);
 
   // 空の配列に何が入るかを指定する(Todoで宣言した3つの配列を持つ型)
   const [todos , setTodos] = useState<Todo[]>([]);
@@ -109,20 +113,28 @@ function App() {
   
 
   const onClickEdit = (id:string,inputText:string) => {
+    // alert('aaa')
+
+    setEditModalIsOpen(true)
         const newTodos = todos.map((todo) => {
+         
       // todoのidがIDに等しい場合編集できる
       if (todo.id === id) {
         todo.inputText = inputText; //編集している文字列のこと
       }
       // リターンで返す意味
       return todo;
+      
     })
-    // クリックでテキストが変わる
-      setIsActive(!isActive)
+
 
     // 左辺と右辺の型がマッチしてない　todos
     setTodos(newTodos);
+    // closeModal();
+  }
 
+  const closeModal = () => {
+    setEditModalIsOpen(false)
   }
 
   
@@ -202,8 +214,18 @@ function App() {
           onClickComplete={onClickComplete} 
           onClickDelete={onClickDelete} 
           onClickEdit={onClickEdit}
-          buttonText={isActive ? '終了' : '編集'}
+          buttonText={'編集'}
         />
+         <Modal isOpen={editModalIsOpen} className="editModal">
+        修正できます
+        <div className='EditTodo'>
+        <span className='tobeDone'>期限：2024-1-1</span>
+                <input 
+                type="text" value="aaa"
+                className='inputText'/>
+        </div>
+        <button className="closeButton"onClick={closeModal}  >完了</button>
+      </Modal>
         <DoneList 
           completetodos={completetodos} 
           onClicBack={onClicBack} 
