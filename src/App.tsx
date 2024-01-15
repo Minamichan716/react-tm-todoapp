@@ -7,7 +7,7 @@ import { DoneList } from './components/DoneList';
 
 // firebase を読み込む
 import db from './firebase';
-import { collection,onSnapshot,doc, addDoc,deleteDoc, setDoc,getDoc} from "firebase/firestore"; 
+import { collection,onSnapshot,doc,deleteDoc, setDoc} from "firebase/firestore"; 
 
 
 function App() {
@@ -96,18 +96,18 @@ function App() {
   }
 
 
+  // const newTodos = todos.map((todo) => {
+  //   // todoのidがIDに等しい場合編集できる
+  //   if (todo.id === id) {
+  //     todo.inputText = inputText; //編集している文字列のこと
+  //   }
+  //   // リターンで返す意味
+  //   return todo;
+  // })
+  // // 左辺と右辺の型がマッチしてない　todos
+  // setTodos(newTodos);
+  
 
-  const newTodos = todos.map((todo) => {
-    // todoのidがIDに等しい場合編集できる
-    if (todo.id === id) {
-      todo.inputText = inputText; //編集している文字列のこと
-    }
-    // リターンで返す意味
-    return todo;
-  })
-  // 左辺と右辺の型がマッチしてない　todos
-  setTodos(newTodos);
-=======
   const onClickEdit = (id:string,inputText:string) => {
         const newTodos = todos.map((todo) => {
       // todoのidがIDに等しい場合編集できる
@@ -139,7 +139,7 @@ function App() {
   }
 
     // 未完了リストの完了ボタン(完了リストに移動させる)
-    const onClickComplete = async(todo:Todo,id:string) => {
+    const onClickComplete = async(id:string) => {
 
       // 残されたリスト
       const newIncompleteTodos= todos.filter((todo) => todo.id !== id );
@@ -149,11 +149,11 @@ function App() {
   
       // await deleteDoc(doc(db,"todos",id))
       // firebaseのデータベースにデータを追加する
-      await setDoc(doc(db, "completetodos"), {
-        id:todo.id,
-        inputText:todo.inputText,
-        targetDate:todo.targetDate,
-      });
+      // await setDoc(doc(db, "completetodos"), {
+      //   id:todo.id,
+      //   inputText:todo.inputText,
+      //   targetDate:todo.targetDate,
+      // });
   
           setTodos(newIncompleteTodos);
           setCompletetodos(newCompleteTodos)
