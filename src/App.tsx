@@ -212,18 +212,15 @@ function App() {
           buttonText={'編集'}
         />
         <Modal isOpen={editModalIsOpen} className="editModal">
-       
-        {todos.map((todo) => (
-        <div className='EditTodo'>
-        <input  name="date" type="date" value={todo.targetDate}className='EditTodoText' />
-        <input type="text" value={todo.inputText} className='inputText'/>
-        </div>
-          ))
-
-          }
-        <button className="closeButton"onClick={closeModal}>完了</button>
-    
-      </Modal>
+          {todos.map((todo) => (
+          <div className='EditTodo'>
+          <input  name="date" type="date" value={todo.targetDate}className='EditTodoText' />
+          <input type="text" value={todo.inputText} className='inputText'/>
+          </div>
+            ))
+            }
+          <button className="closeButton"onClick={closeModal}>完了</button>
+       </Modal>
         <DoneList 
           completetodos={completetodos} 
           onClicBack={onClicBack} 
