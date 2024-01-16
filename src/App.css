@@ -151,9 +151,9 @@ padding: 10px;
 
 /* 閉じるボタン */
 .closeButton{
-  border: 1px solid #1F69FF;
+  border: none;
   color: #fff;
-  background-color: #1F69FF;
+  background-color: #4ed963;
   transition: all 0.3s;
   width: 100px;
 }

@@ -10,6 +10,7 @@ import Modal from "react-modal";
 import db from './firebase';
 import { collection,onSnapshot,doc,deleteDoc, setDoc} from "firebase/firestore"; 
 
+// https://react-tm-todolist.web.app
 
 function App() {
   // 入力したtodoの取得
@@ -31,6 +32,7 @@ function App() {
   // 完了ボタン 
   const [completetodos, setCompletetodos] = useState<Todo[]>([]);
 
+  const [targetTodo, setTargettodo] = useState<Todo[]>([]);
 
   // firebase　リロードしてからデータを取得する
   // データベースと連携してデータを取ってくる
@@ -79,11 +81,11 @@ function App() {
     console.log(targetDate);
     console.log(newToday);
 
+
     
    const calcDate = targetDate-newToday
-    if (calcDate < 0){
-      alert('当日以降の日付を入力してください')
-    }
+   calcDate < 0 && alert('当日以降の日付を入力してください') ;
+
   }
 
 
@@ -114,19 +116,21 @@ function App() {
   }
 
 
-  const onClickEdit = (todo:Todo,id:string) =>{
- todos.filter((todo) => {
+  const onClickEdit = (inputText:string,targetDate,id:string) =>{
+ const targetTodo = todos.map((todo) => {
     if(todo.id === id) {
       todo.inputText = inputText;
-      todo.targetDate = inputDate;
+      todo.targetDate = inputDate
+      ;
     }
     return todo;
   });
 
 // モーダルが開く
           setEditModalIsOpen(true)
-          setInputText(inputText);
-          setInputDate(inputDate);
+          setTargettodo(targetTodo)
+          // setInputText(inputText);
+          // setInputDate(inputDate);
 
     };
 
@@ -212,7 +216,7 @@ function App() {
           buttonText={'編集'}
         />
         <Modal isOpen={editModalIsOpen} className="editModal">
-          {todos.map((todo) => (
+          {targetTodo.map((todo) => (
           <div className='EditTodo'>
           <input  name="date" type="date" value={todo.targetDate}className='EditTodoText' />
           <input type="text" value={todo.inputText} className='inputText'/>
