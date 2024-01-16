@@ -9,6 +9,7 @@ import Modal from "react-modal";
 // firebase を読み込む
 import db from './firebase';
 import { collection,onSnapshot,doc,deleteDoc, setDoc} from "firebase/firestore"; 
+import { log } from 'console';
 
 // https://react-tm-todolist.web.app
 
@@ -147,15 +148,16 @@ function App() {
   }
 
     // 未完了リストの完了ボタン(完了リストに移動させる)
-    const onClickComplete = async(todo:Todo,id) => {
+    const onClickComplete = async(todo:Todo) => {
 
       // 残されたリスト
-      const newIncompleteTodos= todos.filter((todo) => todo.id !== id );
+      const newIncompleteTodos= todos.filter((incompleteTodo) => incompleteTodo.id !== todo.id );
       // 選択したtodo
-      const targetIncompleteTodos = todos.filter((todo) => todo.id === id );
+      const targetIncompleteTodos = todos.filter((incompleteTodo) => incompleteTodo.id === todo.id );
+      // console.log('aaa');
+      
       const newCompleteTodos= [...completetodos,...targetIncompleteTodos]
   
-      // await deleteDoc(doc(db,"todos",todo.id))
       // firebaseのデータベースにデータを追加する
       await setDoc(doc(db, "completetodos",todo.id), {
         id:todo.id,
