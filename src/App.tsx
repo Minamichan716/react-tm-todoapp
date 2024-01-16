@@ -18,14 +18,20 @@ function App() {
   // 入力した日付の取得
   const [inputDate, setInputDate] = useState("");
 
-  // ボタンテキスト変更
-  // const [isActive, setIsActive] = useState(false)
-
   // モーダル開く
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
 
+  // モーダル閉じる
+  const closeModal = () => {
+    setEditModalIsOpen(false)
+  }
   // 空の配列に何が入るかを指定する(Todoで宣言した3つの配列を持つ型)
   const [todos , setTodos] = useState<Todo[]>([]);
+
+  // 完了ボタン 
+  const [completetodos, setCompletetodos] = useState<Todo[]>([]);
+
+
   // firebase　リロードしてからデータを取得する
   // データベースと連携してデータを取ってくる
   useEffect(() => {
@@ -41,8 +47,6 @@ function App() {
 
   },[])
 
-  // 完了ボタン 
-  const [completetodos, setCompletetodos] = useState<Todo[]>([]);
 
   // 型を指定しておく
   type Todo = {
@@ -57,22 +61,32 @@ function App() {
     setInputText(event.target.value)
   }
 
+
   // 完了予定日の取得 日付のエラーを表示させたい(当日以降の日付を入力してください)
   const targetDate = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputDate(event.target.value)
-    // console.log(event.target.value); 
     
     //本日の日付の取得
     const today = new Date();
+    const newToday = Number(today.toLocaleDateString("ja-JP", {year: "numeric",month: "2-digit",
+    day: "2-digit"}).replaceAll('/', ''))
 
+    
     // 入力した日付の取得
-    const targetDate = event.target.value;
-    // alert(addDate)
-    console.log(  today.valueOf());
-    // console.log(Number(targetDate).getTime());
-    console.log(typeof targetDate+'??' );
-    console.log(targetDate.valueOf());
+    const targetDate = Number((event.target.value).replaceAll('-',''));
+
+
+    console.log(targetDate);
+    console.log(newToday);
+
+    
+   const calcDate = targetDate-newToday
+    if (calcDate < 0){
+      alert('当日以降の日付を入力してください')
+    }
   }
+
+
 
 
   // リスト追加の処理
@@ -100,44 +114,22 @@ function App() {
   }
 
 
-  // const newTodos = todos.map((todo) => {
-  //   // todoのidがIDに等しい場合編集できる
-  //   if (todo.id === id) {
-  //     todo.inputText = inputText; //編集している文字列のこと
-  //   }
-  //   // リターンで返す意味
-  //   return todo;
-  // })
-  // // 左辺と右辺の型がマッチしてない　todos
-  // setTodos(newTodos);
-  
+  const onClickEdit = (todo:Todo,id:string) =>{
+ todos.filter((todo) => {
+    if(todo.id === id) {
+      todo.inputText = inputText;
+      todo.targetDate = inputDate;
+    }
+    return todo;
+  });
 
-  const onClickEdit = (id:string,inputText:string) => {
-    // alert('aaa')
+// モーダルが開く
+          setEditModalIsOpen(true)
+          setInputText(inputText);
+          setInputDate(inputDate);
 
-    setEditModalIsOpen(true)
-        const newTodos = todos.map((todo) => {
-         
-      // todoのidがIDに等しい場合編集できる
-      if (todo.id === id) {
-        todo.inputText = inputText; //編集している文字列のこと
-      }
-      // リターンで返す意味
-      return todo;
-      
-    })
+    };
 
-
-    // 左辺と右辺の型がマッチしてない　todos
-    setTodos(newTodos);
-    // closeModal();
-  }
-
-  const closeModal = () => {
-    setEditModalIsOpen(false)
-  }
-
-  
 /* =============================================
 未完了リスト */
 
@@ -151,7 +143,7 @@ function App() {
   }
 
     // 未完了リストの完了ボタン(完了リストに移動させる)
-    const onClickComplete = async(id:string) => {
+    const onClickComplete = async(todo:Todo,id) => {
 
       // 残されたリスト
       const newIncompleteTodos= todos.filter((todo) => todo.id !== id );
@@ -159,13 +151,13 @@ function App() {
       const targetIncompleteTodos = todos.filter((todo) => todo.id === id );
       const newCompleteTodos= [...completetodos,...targetIncompleteTodos]
   
-      // await deleteDoc(doc(db,"todos",id))
+      // await deleteDoc(doc(db,"todos",todo.id))
       // firebaseのデータベースにデータを追加する
-      // await setDoc(doc(db, "completetodos"), {
-      //   id:todo.id,
-      //   inputText:todo.inputText,
-      //   targetDate:todo.targetDate,
-      // });
+      await setDoc(doc(db, "completetodos",todo.id), {
+        id:todo.id,
+        inputText:todo.inputText,
+        targetDate:todo.targetDate,
+      });
   
           setTodos(newIncompleteTodos);
           setCompletetodos(newCompleteTodos)
@@ -201,7 +193,10 @@ function App() {
   return (
     <div className="App">
       <h1>Todo List</h1>
+
+
       <InputTodos 
+     
         inputText={inputText}
         inputDate={inputDate} 
         onSubmitTodoAdd={onSubmitTodoAdd}
@@ -216,23 +211,28 @@ function App() {
           onClickEdit={onClickEdit}
           buttonText={'編集'}
         />
-         <Modal isOpen={editModalIsOpen} className="editModal">
-        修正できます
+        <Modal isOpen={editModalIsOpen} className="editModal">
+       
+        {todos.map((todo) => (
         <div className='EditTodo'>
-        <span className='tobeDone'>期限：2024-1-1</span>
-                <input 
-                type="text" value="aaa"
-                className='inputText'/>
+        <input  name="date" type="date" value={todo.targetDate}className='EditTodoText' />
+        <input type="text" value={todo.inputText} className='inputText'/>
         </div>
-        <button className="closeButton"onClick={closeModal}  >完了</button>
+          ))
+
+          }
+        <button className="closeButton"onClick={closeModal}>完了</button>
+    
       </Modal>
         <DoneList 
           completetodos={completetodos} 
           onClicBack={onClicBack} 
           completeDelete={completeDelete}
         />
+        
       </div>
     </div>
+    
   );
 }
 
