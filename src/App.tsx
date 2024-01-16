@@ -114,21 +114,27 @@ function App() {
   }
 
 
-  const onClickEdit = (todo:Todo,id:string) =>{
- todos.filter((todo) => {
-    if(todo.id === id) {
-      todo.inputText = inputText;
-      todo.targetDate = inputDate;
-    }
-    return todo;
-  });
+//   const onClickEdit = (todo:Todo,id:string) =>{
+//  todos.filter((todo) => {
+//     if(todo.id === id) {
+//       todo.inputText = inputText;
+//       todo.targetDate = inputDate;
+//     }
+//     return todo;
+//   });
 
-// モーダルが開く
-          setEditModalIsOpen(true)
-          setInputText(inputText);
-          setInputDate(inputDate);
+// // モーダルが開く
+//           setEditModalIsOpen(true)
+//           setInputText(inputText);
+//           setInputDate(inputDate);
 
-    };
+//     };
+
+  const onClickEdit = (clickedTodo: Todo) => {
+    setEditModalIsOpen(true)
+    setInputText(clickedTodo.inputText)
+    setInputDate(clickedTodo.targetDate)
+  }
 
 /* =============================================
 未完了リスト */
@@ -212,13 +218,13 @@ function App() {
           buttonText={'編集'}
         />
         <Modal isOpen={editModalIsOpen} className="editModal">
-          {todos.map((todo) => (
-          <div className='EditTodo'>
-          <input  name="date" type="date" value={todo.targetDate}className='EditTodoText' />
-          <input type="text" value={todo.inputText} className='inputText'/>
-          </div>
-            ))
-            }
+          {/* モーダルは編集したいtodo一つのみを表示させてばOKなのでmapを使用して複数表示はしない */}
+          {/* {todos.map((todo) => ( */}
+            <div className='EditTodo'>
+              <input  name="date" type="date" value={inputDate}className='EditTodoText' />
+              <input type="text" value={inputText} className='inputText'/>
+            </div>
+          {/* ))} */}
           <button className="closeButton"onClick={closeModal}>完了</button>
        </Modal>
         <DoneList 
