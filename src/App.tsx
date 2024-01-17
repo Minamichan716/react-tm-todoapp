@@ -22,17 +22,14 @@ function App() {
   // モーダル開く
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
 
-  // モーダル閉じる
-  const closeModal = () => {
-    setEditModalIsOpen(false)
-  }
+
   // 空の配列に何が入るかを指定する(Todoで宣言した3つの配列を持つ型)
   const [todos , setTodos] = useState<Todo[]>([]);
 
   // 完了ボタン 
   const [completetodos, setCompletetodos] = useState<Todo[]>([]);
 
-  const [targetTodo, setTargettodo] = useState<Todo[]>([]);
+  // const [targetTodo, setTargettodo] = useState<Todo[]>([]);
 
   // firebase　リロードしてからデータを取得する
   // データベースと連携してデータを取ってくる
@@ -119,23 +116,30 @@ function App() {
   }
 
 
-  const onClickEdit = (inputText:string,targetDate,id:string) =>{
- const targetTodo = todos.map((todo) => {
-    if(todo.id === id) {
-      todo.inputText = inputText;
-      todo.targetDate = inputDate
-      ;
-    }
-    return todo;
-  });
-
+  const onClickEdit = (clickdTodo:Todo) =>{
 // モーダルが開く
           setEditModalIsOpen(true)
-          setTargettodo(targetTodo)
-          // setInputText(inputText);
-          // setInputDate(inputDate);
+          setInputText(clickdTodo.inputText);
+          setInputDate(clickdTodo.targetDate);
+          // console.log(setInputText(clickdTodo.inputText));
+          
 
     };
+
+    const EditTodo = () => {
+      // setInputText(EditedTodo.inputText);
+      // setInputDate(EditedTodo.targetDate);
+      closeModal();
+    }
+
+    const closeModal = () => {
+    // モーダル閉じる
+    setEditModalIsOpen(false)
+    
+
+  }
+
+    
 
 /* =============================================
 未完了リスト */
@@ -233,14 +237,15 @@ function App() {
           buttonText={'編集'}
         />
         <Modal isOpen={editModalIsOpen} className="editModal">
-          {targetTodo.map((todo) => (
+         
           <div className='EditTodo'>
-          <input  name="date" type="date" value={todo.targetDate}className='EditTodoText' />
-          <input type="text" value={todo.inputText} className='inputText'/>
+          <input  name="date" type="date" placeholder={inputDate} value= {inputDate}className='EditTodoText' />
+          <input type="text" placeholder={inputText} className='inputText'/>
           </div>
-            ))
-            }
-          <button className="closeButton"onClick={closeModal}>完了</button>
+ 
+
+          <button className="closeButton" onClick={EditTodo}>完了</button>
+    
        </Modal>
         <DoneList 
           completetodos={completetodos} 
