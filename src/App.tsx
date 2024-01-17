@@ -29,6 +29,9 @@ function App() {
   // 完了ボタン 
   const [completetodos, setCompletetodos] = useState<Todo[]>([]);
 
+  // 編集中のtodoのidを保存する
+  const [editingId, setEditingId] = useState<string>("");
+
   // const [targetTodo, setTargettodo] = useState<Todo[]>([]);
 
   // firebase　リロードしてからデータを取得する
@@ -116,27 +119,28 @@ function App() {
   }
 
 
-  const onClickEdit = (clickdTodo:Todo) =>{
+  const onClickEdit = (clickedTodo:Todo) =>{
 // モーダルが開く
-          setEditModalIsOpen(true)
-          setInputText(clickdTodo.inputText);
-          setInputDate(clickdTodo.targetDate);
-          // console.log(setInputText(clickdTodo.inputText));
-          
-
-    };
+    setEditModalIsOpen(true);
+    setInputText(clickedTodo.inputText);
+    setInputDate(clickedTodo.targetDate);
+    setEditingId(clickedTodo.id);
+  };
 
     const EditTodo = () => {
-      // setInputText(EditedTodo.inputText);
-      // setInputDate(EditedTodo.targetDate);
+      const editedTodos = todos.map((todo) => {
+        return todo.id === editingId ? {...todo, inputText, targetDate: inputDate} : todo;  // 編集中のTodoのみ更新
+      });
+      setTodos(editedTodos);
       closeModal();
     }
 
     const closeModal = () => {
     // モーダル閉じる
     setEditModalIsOpen(false)
-    
-
+    setEditingId("");
+    setInputDate("")
+    setInputText("");
   }
 
     
@@ -239,8 +243,8 @@ function App() {
         <Modal isOpen={editModalIsOpen} className="editModal">
          
           <div className='EditTodo'>
-          <input  name="date" type="date" placeholder={inputDate} value= {inputDate}className='EditTodoText' />
-          <input type="text" placeholder={inputText} className='inputText'/>
+          <input  name="date" type="date" value={inputDate} onChange={(e) => setInputDate(e.target.value)} className='EditTodoText' />
+          <input type="text" placeholder={inputText} onChange={(e) => setInputText(e.target.value)} className='inputText'/>
           </div>
  
 
