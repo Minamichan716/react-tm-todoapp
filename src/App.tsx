@@ -8,7 +8,7 @@ import Modal from "react-modal";
 
 // firebase を読み込む
 import db from './firebase';
-import { collection,onSnapshot,doc,deleteDoc, setDoc,getDocs, QuerySnapshot} from "firebase/firestore"; 
+import { collection,onSnapshot,doc,deleteDoc, setDoc,getDocs, QuerySnapshot, updateDoc} from "firebase/firestore"; 
 
 // https://react-tm-todolist.web.app
 
@@ -29,6 +29,8 @@ function App() {
   // 完了ボタン 
   const [completetodos, setCompletetodos] = useState<Todo[]>([]);
 
+  // 編集
+  const [editingId, setEditingId] = useState<string>("");
   // const [targetTodo, setTargettodo] = useState<Todo[]>([]);
 
   // firebase　リロードしてからデータを取得する
@@ -102,6 +104,12 @@ function App() {
     targetDate:inputDate,
   })
 
+  updateDoc(doc(db, "todos",id), {
+    id,
+    inputText:inputText,
+    targetDate:inputDate,
+  });
+
   // 新しいTodo作成
   const newTodos :Todo= {
     inputText : inputText,
@@ -116,26 +124,34 @@ function App() {
   }
 
 
-  const onClickEdit = (clickdTodo:Todo) =>{
+  const onClickEdit = (clickedTodo:Todo) =>{
 // モーダルが開く
           setEditModalIsOpen(true)
-          setInputText(clickdTodo.inputText);
-          setInputDate(clickdTodo.targetDate);
-          // console.log(setInputText(clickdTodo.inputText));
-          
-
+          setInputText(clickedTodo.inputText);
+          setInputDate(clickedTodo.targetDate);
+          setEditingId(clickedTodo.id);
+      
     };
 
     const EditTodo = () => {
-      // setInputText(EditedTodo.inputText);
-      // setInputDate(EditedTodo.targetDate);
+      const editedTodos = todos.map((todo) => {
+        return todo.id === editingId ? {...todo, inputText, targetDate: inputDate} : todo;  // 編集中のTodoのみ更新
+      });
+
+
+
+      setTodos(editedTodos);
       closeModal();
     }
+
+
 
     const closeModal = () => {
     // モーダル閉じる
     setEditModalIsOpen(false)
-    
+    setEditingId("");
+    setInputDate("")
+    setInputText("");
 
   }
 
@@ -171,6 +187,8 @@ function App() {
         inputText:todo.inputText,
         targetDate:todo.targetDate,
       });
+
+
 
 
      setCompletetodos(newCompleteTodos)
@@ -239,8 +257,8 @@ function App() {
         <Modal isOpen={editModalIsOpen} className="editModal">
          
           <div className='EditTodo'>
-          <input  name="date" type="date" placeholder={inputDate} value= {inputDate}className='EditTodoText' />
-          <input type="text" placeholder={inputText} className='inputText'/>
+          <input  name="date" type="date" value= {inputDate}onChange={(e) => setInputDate(e.target.value)}className='EditTodoText' />
+          <input type="text" placeholder={inputText} onChange={(e) => setInputText(e.target.value)}className='inputText'/>
           </div>
  
 
