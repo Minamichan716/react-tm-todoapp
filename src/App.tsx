@@ -8,8 +8,7 @@ import Modal from "react-modal";
 
 // firebase を読み込む
 import db from './firebase';
-import { collection,onSnapshot,doc,deleteDoc, setDoc} from "firebase/firestore"; 
-import { log } from 'console';
+import { collection,onSnapshot,doc,deleteDoc, setDoc,getDocs, QuerySnapshot} from "firebase/firestore"; 
 
 // https://react-tm-todolist.web.app
 
@@ -39,14 +38,17 @@ function App() {
   // データベースと連携してデータを取ってくる
   useEffect(() => {
     const Tododata = collection(db,'todos');
-    // getDocs(Tododata).then((snapShot) => {
-    //   console.log(snapShot.docs.map((doc) => ({...doc.data()})));
-    //   setTodos(snapShot.docs.map((doc) => ({...doc.data()as Todo})))
-    // })
     // リアルタイムで取得
     onSnapshot(Tododata, (todo) => {
       setTodos(todo.docs.map((doc) => ({...doc.data()as Todo})));
     });
+
+// 完了リストを読み込む
+    const Completedata = collection(db,'completetodos');
+    getDocs(Completedata).then((querySnapshot)=>{
+     setCompletetodos(querySnapshot.docs.map((doc)=>doc.data()as Todo))
+    })
+
 
   },[])
 
@@ -148,7 +150,7 @@ function App() {
   }
 
     // 未完了リストの完了ボタン(完了リストに移動させる)
-    const onClickComplete = async(todo:Todo) => {
+    const onClickComplete = (todo:Todo) => {
 
       // 残されたリスト
       const newIncompleteTodos= todos.filter((incompleteTodo) => incompleteTodo.id !== todo.id );
@@ -157,16 +159,18 @@ function App() {
       // console.log('aaa');
       
       const newCompleteTodos= [...completetodos,...targetIncompleteTodos]
-  
+      deleteDoc(doc(db,"todos",todo.id))
+    
       // firebaseのデータベースにデータを追加する
-      await setDoc(doc(db, "completetodos",todo.id), {
+       setDoc(doc(db, "completetodos",todo.id), {
         id:todo.id,
         inputText:todo.inputText,
         targetDate:todo.targetDate,
       });
-  
-          setTodos(newIncompleteTodos);
-          setCompletetodos(newCompleteTodos)
+
+
+     setCompletetodos(newCompleteTodos)
+            setTodos(newIncompleteTodos);
         }
 
 
@@ -177,21 +181,32 @@ function App() {
 完了リスト */
 
   // 完了リスト削除ボタン
-  const completeDelete = (id:string) => {
+  const completeDelete = async(id:string) => {
     const newRemainCompleteTodos = completetodos.filter((todo) => todo.id !== id );
     // console.log(newRemainCompleteTodos)
     setCompletetodos(newRemainCompleteTodos);
+    await deleteDoc(doc(db,"completetodos",id))
     }
 
   // 戻すボタン
-  const onClicBack = (id:string) => {
+  const onClicBack = async(todo:Todo) => {
         // 残されたリスト
-        const newCompleteTodos= completetodos.filter((todo) => todo.id !== id );
+        const newCompleteTodos= completetodos.filter((completeTodo) => completeTodo.id !== todo.id );
         // 選択したtodo
-        const targetCompleteTodos = completetodos.filter((todo) => todo.id === id );
+        const targetCompleteTodos = completetodos.filter((completeTodo) => completeTodo.id === todo.id );
         const newIncompleteTodos= [...targetCompleteTodos,...todos]
+        await deleteDoc(doc(db,"completetodos",todo.id))
+              // firebaseのデータベースにデータを追加する
+      await setDoc(doc(db, "todos",todo.id), {
+        id:todo.id,
+        inputText:todo.inputText,
+        targetDate:todo.targetDate,
+      });
+
+      
         setTodos(newIncompleteTodos);
         setCompletetodos(newCompleteTodos)
+
   }
 /* =============================================
 ./完了リスト */

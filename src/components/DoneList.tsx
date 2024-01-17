@@ -12,7 +12,7 @@
                 value={todo.inputText} 
                 className='doneInputText'/>
                 <div className='buttonWrap'>
-                  <button onClick={()=> onClicBack(todo.id)} className='backButton'>戻す</button>
+                  <button onClick={()=> onClicBack(todo)} className='backButton'>戻す</button>
                   <button onClick={()=>completeDelete(todo.id)}  className='deleteButton'>削除</button>
                 </div>
               </li>

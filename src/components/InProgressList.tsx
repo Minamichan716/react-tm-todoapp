@@ -16,7 +16,7 @@ export const InProgressList = ({todos,onClickComplete,onClickDelete,onClickEdit,
                 className='inputText'/>
                 <div className='buttonWrap'>
                   <button onClick={()=> onClickEdit(todo.id)}className='EditButton'>{buttonText}</button>
-                  <button onClick={()=> onClickComplete(todo.id)}className='completeButton'>完了</button>
+                  <button onClick={()=> onClickComplete(todo)}className='completeButton'>完了</button>
                   <button onClick={()=>onClickDelete(todo.id)} className='deleteButton'>削除</button>
                 </div>
               </li>
