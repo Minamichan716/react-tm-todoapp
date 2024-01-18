@@ -56,7 +56,6 @@ function App() {
   type Todo = {
     inputText:string;
     id:string;
-    // checked:boolean;
     targetDate:string;
   }
 
@@ -75,15 +74,10 @@ function App() {
     const newToday = Number(today.toLocaleDateString("ja-JP", {year: "numeric",month: "2-digit",
     day: "2-digit"}).replaceAll('/', ''))
 
-    
     // 入力した日付の取得
     const targetDate = Number((event.target.value).replaceAll('-',''));
-
-
     console.log(targetDate);
     console.log(newToday);
-
-
     
    const calcDate = targetDate-newToday
    calcDate < 0 && alert('当日以降の日付を入力してください') ;
@@ -104,17 +98,11 @@ function App() {
     targetDate:inputDate,
   })
 
-  updateDoc(doc(db, "todos",id), {
-    id,
-    inputText:inputText,
-    targetDate:inputDate,
-  });
 
   // 新しいTodo作成
   const newTodos :Todo= {
     inputText : inputText,
     id,
-    // checked:false,
     targetDate : inputDate,
   };
 
@@ -130,21 +118,22 @@ function App() {
           setInputText(clickedTodo.inputText);
           setInputDate(clickedTodo.targetDate);
           setEditingId(clickedTodo.id);
-      
     };
 
-    const EditTodo = () => {
+    const EditTodo = async(todo:Todo) => {
       const editedTodos = todos.map((todo) => {
         return todo.id === editingId ? {...todo, inputText, targetDate: inputDate} : todo;  // 編集中のTodoのみ更新
       });
 
-
+      await updateDoc(doc(db, "completetodos",todo.id), {
+        id:todo.id,
+        inputText:inputText,
+        targetDate:inputDate,
+      });
 
       setTodos(editedTodos);
       closeModal();
     }
-
-
 
     const closeModal = () => {
     // モーダル閉じる
@@ -262,8 +251,8 @@ function App() {
           </div>
  
 
-          <button className="closeButton" onClick={EditTodo}>完了</button>
-    
+          <button className="closeButton" onClick={setEditingId(EditTodo)}>完了</button>
+          
        </Modal>
         <DoneList 
           completetodos={completetodos} 
