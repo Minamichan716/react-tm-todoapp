@@ -120,13 +120,13 @@ function App() {
           setEditingId(clickedTodo.id);
     };
 
-    const EditTodo = async(todo:Todo) => {
+    const EditTodo = async(id:string) => {
       const editedTodos = todos.map((todo) => {
-        return todo.id === editingId ? {...todo, inputText, targetDate: inputDate} : todo;  // 編集中のTodoのみ更新
+        return todo.id === id ? {...todo, inputText, targetDate: inputDate} : todo;  // 編集中のTodoのみ更新
       });
 
-      await updateDoc(doc(db, "completetodos",todo.id), {
-        id:todo.id,
+      await updateDoc(doc(db, "todos",id), {
+        id,
         inputText:inputText,
         targetDate:inputDate,
       });
@@ -171,18 +171,15 @@ function App() {
       deleteDoc(doc(db,"todos",todo.id))
     
       // firebaseのデータベースにデータを追加する
-       setDoc(doc(db, "completetodos",todo.id), {
+      setDoc(doc(db, "completetodos",todo.id), {
         id:todo.id,
         inputText:todo.inputText,
         targetDate:todo.targetDate,
       });
 
-
-
-
-     setCompletetodos(newCompleteTodos)
-            setTodos(newIncompleteTodos);
-        }
+      setCompletetodos(newCompleteTodos)
+      setTodos(newIncompleteTodos);
+    }
 
 
   /* =============================================
@@ -213,11 +210,8 @@ function App() {
         inputText:todo.inputText,
         targetDate:todo.targetDate,
       });
-
-      
         setTodos(newIncompleteTodos);
         setCompletetodos(newCompleteTodos)
-
   }
 /* =============================================
 ./完了リスト */
@@ -225,10 +219,7 @@ function App() {
   return (
     <div className="App">
       <h1>Todo List</h1>
-
-
       <InputTodos 
-     
         inputText={inputText}
         inputDate={inputDate} 
         onSubmitTodoAdd={onSubmitTodoAdd}
@@ -244,22 +235,17 @@ function App() {
           buttonText={'編集'}
         />
         <Modal isOpen={editModalIsOpen} className="editModal">
-         
           <div className='EditTodo'>
-          <input  name="date" type="date" value= {inputDate}onChange={(e) => setInputDate(e.target.value)}className='EditTodoText' />
-          <input type="text" placeholder={inputText} onChange={(e) => setInputText(e.target.value)}className='inputText'/>
+            <input  name="date" type="date" value= {inputDate}onChange={(e) => setInputDate(e.target.value)}className='EditTodoText' />
+            <input type="text" placeholder={inputText} onChange={(e) => setInputText(e.target.value)}className='inputText'/>
           </div>
- 
-
-          <button className="closeButton" onClick={setEditingId(EditTodo)}>完了</button>
-          
-       </Modal>
+          <button className="closeButton" onClick={() =>EditTodo(editingId)}>完了</button>
+        </Modal>
         <DoneList 
           completetodos={completetodos} 
           onClicBack={onClicBack} 
           completeDelete={completeDelete}
         />
-        
       </div>
     </div>
     
